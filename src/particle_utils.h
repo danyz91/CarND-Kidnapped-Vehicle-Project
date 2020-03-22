@@ -11,6 +11,7 @@
 
 #include <math.h>
 #include <vector>
+#include <iostream>
 
 
 /**
@@ -27,11 +28,11 @@
 inline std::vector<double> runBicycleModel(double curr_x, double curr_y,
                                     double curr_theta, double velocity,
                                     double yaw_rate, double delta_t) {
-  std::vector<double> result(3);
+  std::vector<double> result;
 
   double new_x, new_y, new_theta;
 
-  if (yaw_rate != 0) {
+  if (yaw_rate > 1e-6) {
     double theta_future = yaw_rate * delta_t;
     double speed_fract = velocity/yaw_rate;
 
@@ -68,6 +69,15 @@ inline std::vector<double> runBicycleModel(double curr_x, double curr_y,
 inline double multiv_prob(double x_obs, double y_obs,
                           double mu_x, double mu_y,
                           double sig_x, double sig_y) {
+
+  std::cout << " Testing "<<std::endl;
+  std::cout << " x obs : "<<x_obs<<std::endl;
+  std::cout << " y obs : "<<y_obs<<std::endl;
+  std::cout << " x mu : "<<mu_x<<std::endl;
+  std::cout << " y mu : "<<mu_y<<std::endl;
+  std::cout << " sig x : "<<sig_x<<std::endl;
+  std::cout << " sig y : "<<sig_y<<std::endl;
+
   // calculate normalization term
   double gauss_norm;
   gauss_norm = 1 / (2 * M_PI * sig_x * sig_y);
@@ -79,6 +89,11 @@ inline double multiv_prob(double x_obs, double y_obs,
 
   // calculate weight using normalization terms and exponent
   double weight;
+  std::cout << "gauss norm : "<<gauss_norm <<std::endl;
+
+  std::cout << "exp alone : "<< exponent <<std::endl;
+std::cout << "exp : "<< exp(-exponent) <<std::endl;
+
   weight = gauss_norm * exp(-exponent);
 
   return weight;
@@ -102,7 +117,7 @@ inline std::vector<double> getTransformation(double obs_x, double obs_y,
   std::vector<double> result;
 
   double x_conv = origin_x + cos(theta) * obs_x - sin(theta) * obs_y;
-  double y_conv = origin_y + sin(theta) * obs_x + cos(theta) * obs_x;
+  double y_conv = origin_y + sin(theta) * obs_x + cos(theta) * obs_y;
 
   result.push_back(x_conv);
   result.push_back(y_conv);
