@@ -16,6 +16,8 @@
 #include "helper_functions.h"
 #include "particle_utils.h"
 
+
+// #define DEBUG_INFO  // Flag for visualizing association lines
 #define NUM_PARTICLES 100
 
 struct Particle {
