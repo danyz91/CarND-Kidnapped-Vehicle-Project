@@ -15,7 +15,7 @@ This repository contains all the code for the final project for the Localization
 
 Your robot has been kidnapped and transported to a new location! Luckily it has a map of this location, a (noisy) GPS estimate of its initial location, and lots of (noisy) sensor and control data.
 
-The sparse localization problem stated above is solved by implementing a **2 dimensional particle filter in C++**. 
+The sparse localization problem stated above is solved by implementing a **2 dimensional Particle Filter in C++**. 
 
 The particle filter is given a map in the form of a list of `(x position, y position, landmark id)` and some initial localization information (analogous to what a GPS would provide). At each time step the filter will also get observation and control data.
 
@@ -71,11 +71,11 @@ Particles are so initialized by sampling a Gaussian distribution, taking into ac
 
 The initialization code is contained in function `init` at **lines 26-64**  of  `particle_filter.cpp`.
 
-#### 2. Prediction: Bycicle Model
+#### 2. Prediction: Bicycle Model
 
 Now that particles are initialized it’s time to predict the vehicle’s position. 
 
-Here there are used the equations for updating vehicle position modeled with **Bycicle Model**
+Here there are used the equations for updating vehicle position modeled with **Bicycle Model**
 
 Yaw Rate Constant | Yaw Rate Variable
 --|--
@@ -109,11 +109,11 @@ where
 
 The code for this step is contained in function `getTransformation` defined at **lines 99-112** of `particle_utils.h`
 
-#### 4. Data Association: Nearest Neighbour
+#### 4. Data Association: Nearest Neighbor
 
 Once all coordinate are referenced to the same coordinate system, it is needed to associate each sensor observations to map landmark
 
-Here the **nearest neighbour** policy is chosen to match observation and map landmarks.
+Here the **nearest neighbor** policy is chosen to match observation and map landmarks.
 
 For each observation there is a search for nearest map landmark and its id is set to observation id in order to store this match.
 
@@ -134,8 +134,8 @@ We also assume that each landmark measurement is independent, so we take the pro
 
 In the formula:
 
-* `x_i` is the ith landmark measurement for one particular particle
-* `mu_i` is the predicted measurement for the map landmark corresponding to the ith measurement
+* `x_i` is the i-th landmark measurement for one particular particle
+* `mu_i` is the predicted measurement for the map landmark corresponding to the i-th measurement
 * `m` is the total number of measurements for one particle
 * `sigma` is the covariance of the measurement. It is a symmetric quadratic matrix representing uncertainty over x, y on the diagonal and correlated uncertainties x over y and y over x in other cells
 
@@ -166,21 +166,24 @@ Different tests have been led in order to evaluate the scalability robustness an
 Num Particles | X error | Y Error | Yaw Error | End System Time
 --- | --- | --- | --- | ---
 5 | .208 | .191 | .007 | 49s |
-**100** | **.115** | **.106** | **.004** | **50s** |
+**100** | **.114** | **.108** | **.004** | **69s** |
 400 | .110 | .101 | .004 | 102s |
 1000 | .109 | .103 | .004 | >100s |
 
 Some considerations can be made by the result table above:
 
 * Even with just 5 particles the filter is able to passing the simulator grading process. Its error in location is about 20 cm for both x and y coordinate.
-* With 100 particles, the computation time is not affected, so the filter scales pretty well for these amounts. The error however reduces to 10 cm for both coordinates. This results is definitely better for localization purpose since a self driving car must be capable of localize itself with a precision of at least 10 cm.
+* With 100 particles, the error reduces to 10 cm for both coordinates. This results is definitely better for localization purpose since a self driving car must be capable of localize itself with a precision of at least 10 cm.
 * 400 particles and 1000 particles cases show that increasing the number of particles affect a lot the computation time and lead to non-significant improvement in performance.
 
 Since the consideration made on particles number the released version has **100 particles**.
 
 ## Video Result
 
-Debug information shown
+In the video below there are shown Particle Filter performance using 100 particles.
 
+The blue lines are debug information activated via preprocessor directive `#define DEBUG_INFO` located at **line 20** of `particle_filter.h` file. 
 
+The green laser sensors from the car nearly overlap the blue laser sensors from the particle, this means that the particle transition calculations were done correctly.
 
+:[![final](https://img.youtube.com/vi/OyGvqU18L6Y/0.jpg)](https://www.youtube.com/watch?v=OyGvqU18L6Y) 
